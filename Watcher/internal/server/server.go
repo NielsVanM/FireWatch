@@ -42,7 +42,7 @@ func NewServer(port int) *Server {
 }
 
 // AddRouter adds a router to the server with the prefix as url and the selected middlware
-func (s *Server) AddRouter(name, prefix string, middleware ...mux.MiddlewareFunc) *Router {
+func (s *Server) AddRouter(name, prefix string) *Router {
 	// Create mux subrouter linked to the master router
 	mr := s.masterRouter.PathPrefix(prefix).Subrouter()
 
@@ -50,7 +50,7 @@ func (s *Server) AddRouter(name, prefix string, middleware ...mux.MiddlewareFunc
 	r := Router{
 		name,
 		[]*Endpoint{},
-		middleware,
+		[]mux.MiddlewareFunc{},
 		mr,
 	}
 
@@ -58,6 +58,11 @@ func (s *Server) AddRouter(name, prefix string, middleware ...mux.MiddlewareFunc
 	s.routers = append(s.routers, &r)
 
 	return &r
+}
+
+// AddMiddlewware adds middleware to the router
+func (r *Router) AddMiddlewware(function ...mux.MiddlewareFunc) {
+	r.middleware = append(r.middleware, function...)
 }
 
 // AddEndpoint adds a handlefunc to the router with the url and the function
@@ -77,6 +82,11 @@ func (s *Server) Start() {
 	// For every router and every endpoint within the router add the endpoint
 	// to the router by using the handlfunc function
 	for _, router := range s.routers {
+		fmt.Println("Registering middlware for", router.Name)
+		for _, middle := range router.middleware {
+			router.router.Use(middle)
+		}
+
 		fmt.Println("Registering routes for", router.Name)
 		for _, endp := range router.endpoints {
 			fmt.Println("\tRegistered:", endp.URL)

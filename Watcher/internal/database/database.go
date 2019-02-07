@@ -8,10 +8,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var Database *DB
+// DB is a global entrypoint for database queries
+var DB *Database
 
-// DB interface wrapper for sql/pq
-type DB struct {
+// Database interface wrapper for sql/pq
+type Database struct {
 	// Credentials
 	Username string
 	Password string
@@ -27,8 +28,8 @@ type DB struct {
 }
 
 // NewDB is a constructor for the database
-func NewDB(username, password, name, url string, port int) *DB {
-	db := DB{
+func NewDB(username, password, name, url string, port int) *Database {
+	db := Database{
 		username,
 		password,
 		name,
@@ -39,12 +40,12 @@ func NewDB(username, password, name, url string, port int) *DB {
 	}
 	db.Connect()
 
-	Database = &db
+	DB = &db
 	return &db
 }
 
 // Connect opens a connection to the dabase
-func (db *DB) Connect() {
+func (db *Database) Connect() {
 	connectionString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", db.Username, db.Password, db.Name)
 	var err error
 
@@ -66,12 +67,12 @@ func (db *DB) Connect() {
 }
 
 // AddTable adds a table to the setup sequence
-func (db *DB) AddTable(query string) {
+func (db *Database) AddTable(query string) {
 	db.setupQueries = append(db.setupQueries, query)
 }
 
 // CreateTables creates multiple tables based in the array of strings provided
-func (db *DB) CreateTables() error {
+func (db *Database) CreateTables() error {
 	tx, err := db.connection.Begin()
 	if err != nil {
 		fmt.Println("Failed to create a transaction, " + err.Error())
@@ -94,7 +95,7 @@ func (db *DB) CreateTables() error {
 }
 
 // Exec is short for db.connection.Exec()
-func (db *DB) Exec(query string, args ...interface{}) {
+func (db *Database) Exec(query string, args ...interface{}) {
 	_, err := db.connection.Exec(query, args...)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -103,7 +104,7 @@ func (db *DB) Exec(query string, args ...interface{}) {
 
 // ExecBatch executes a query for every value in a BatchQuery struct
 // it all happens in a transaction
-func (db *DB) ExecBatch(batch BatchQuery) {
+func (db *Database) ExecBatch(batch BatchQuery) {
 	tx, err := db.connection.Begin()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -121,7 +122,7 @@ func (db *DB) ExecBatch(batch BatchQuery) {
 }
 
 // Query is short for db.connection.query
-func (db *DB) Query(sql string, vals ...interface{}) *sql.Rows {
+func (db *Database) Query(sql string, vals ...interface{}) *sql.Rows {
 	rows, err := db.connection.Query(sql, vals...)
 	if err != nil {
 		fmt.Println("Error while executing query " + err.Error())

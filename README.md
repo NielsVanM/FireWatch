@@ -16,6 +16,6 @@ As any project we rely on others to build our systems. Special thanks to the cre
 
 * [MUX](https://www.github.com/gorilla/mux) HTTP Router
 * [PQ](https://www.github.com/lib/pq) Postgres Database
-* [Copier](https:://www.github.com/linzhu/copier) Deep object copy
+* [BCrypt](https://www.golang.org/x/crypto/bcrypt) Hashing
 
 For instructions on how to install the dependencies see the development section of this readme.

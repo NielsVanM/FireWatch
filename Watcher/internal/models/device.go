@@ -1,8 +1,6 @@
 package models
 
-import (
-	"github.com/nielsvanm/firewatch/internal/database"
-)
+import "github.com/nielsvanm/firewatch/internal/database"
 
 // Device represents a physical node in the network
 type Device struct {
@@ -13,13 +11,13 @@ type Device struct {
 }
 
 func (d *Device) Save() {
-	database.Database.Exec(`
+	database.DB.Exec(`
 		INSERT INTO device (uuid, longitude, latitude)
 		VALUES ($1, $2, $3);`, d.UUID, d.Longitude, d.Latitude)
 }
 
 func GetAllDevices() []*Device {
-	rows := database.Database.Query(`
+	rows := database.DB.Query(`
 	SELECT * FROM device;`)
 
 	devs := []*Device{}
@@ -39,7 +37,7 @@ func GetAllDevices() []*Device {
 }
 
 func GetDeviceByID(id int) *Device {
-	rows := database.Database.Query(`
+	rows := database.DB.Query(`
 	SELECT * FROM device
 	WHERE id = $1;`, id)
 
