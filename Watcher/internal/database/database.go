@@ -122,13 +122,8 @@ func (db *Database) ExecBatch(batch BatchQuery) {
 }
 
 // Query is short for db.connection.query
-func (db *Database) Query(sql string, vals ...interface{}) *sql.Rows {
-	rows, err := db.connection.Query(sql, vals...)
-	if err != nil {
-		fmt.Println("Error while executing query " + err.Error())
-	}
-
-	return rows
+func (db *Database) Query(sql string, vals ...interface{}) (*sql.Rows, error) {
+	return db.connection.Query(sql, vals...)
 }
 
 // BatchQuery is a struct representing a query and a list of interfaces

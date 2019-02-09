@@ -9,6 +9,6 @@ func main() {
 	database.NewDB("postgres", "Password8", "firewatch", "localhost", 5432)
 
 	for _, query := range models.SetupQueries {
-		database.Database.Query(query)
+		database.DB.Query(query)
 	}
 }

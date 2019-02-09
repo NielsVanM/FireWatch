@@ -1,0 +1,64 @@
+.center-screen {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.fw-title {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  margin-bottom: 2em;
+}
+
+.fw-title span {
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}
+
+body {
+  background-image: url("/static/images/LoginWallpaper.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+form {
+  border-radius: 10px;
+  padding: 3em;
+  background-color: white;
+  -webkit-box-shadow: 0px 0px 20px;
+          box-shadow: 0px 0px 20px;
+}
+
+form input {
+  margin-bottom: 1em;
+}
+
+form img {
+  width: 50px;
+  height: auto;
+}
+
+form span {
+  font-size: 32px;
+}
+/*# sourceMappingURL=auth.css.map */

@@ -5,8 +5,9 @@ import (
 	"net/http"
 
 	"github.com/nielsvanm/firewatch/internal/models"
-	"github.com/nielsvanm/firewatch/internal/tools"
 )
+
+var authRedirectURL = "/auth/login/"
 
 // AuthorizationMiddleware is responsible for authenticating user requests
 func AuthorizationMiddleware(next http.Handler) http.Handler {
@@ -15,18 +16,20 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 		// Get token from cookies
 		token, err := r.Cookie("session-token")
 		if err != nil {
-			http.Redirect(w, r, "/auth/login/", http.StatusSeeOther)
+			http.Redirect(w, r, authRedirectURL, http.StatusSeeOther)
 			fmt.Println("Authorization", err.Error())
 			return
 		}
 
 		// Get and verify the session
 		sess := models.GetSessionByToken(token.Value)
-		if sess.Verify(tools.GetIPAddress(r)) {
+
+		if sess.Verify() {
 			sess.Save()
 			next.ServeHTTP(w, r)
 			return
 		}
-		w.Write([]byte("User not authenticated or session expired. Please log in"))
+
+		http.Redirect(w, r, authRedirectURL, http.StatusSeeOther)
 	})
 }

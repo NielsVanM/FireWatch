@@ -17,7 +17,7 @@ func (d *Device) Save() {
 }
 
 func GetAllDevices() []*Device {
-	rows := database.DB.Query(`
+	rows, _ := database.DB.Query(`
 	SELECT * FROM device;`)
 
 	devs := []*Device{}
@@ -37,7 +37,7 @@ func GetAllDevices() []*Device {
 }
 
 func GetDeviceByID(id int) *Device {
-	rows := database.DB.Query(`
+	rows, _ := database.DB.Query(`
 	SELECT * FROM device
 	WHERE id = $1;`, id)
 

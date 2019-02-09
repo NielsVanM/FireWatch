@@ -7,13 +7,8 @@ import (
 	"strings"
 )
 
-// TemplateFolder is the folder where the templates are located,
-// typically injected by the main.go file
-var TemplateFolder string
-
-func init() {
-	TemplateFolder = "./web/templates/"
-}
+// TemplateFolder is the folder where the templates are located
+var TemplateFolder = "./templates/"
 
 // Page structure that keeps the data of a page, these are used for rendering
 // pages.

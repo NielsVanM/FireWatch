@@ -59,7 +59,7 @@ func (a *Account) HasID() bool {
 
 // NewSession creates a new session for the user with a session token and IP
 // address combination. The expiry date is set to two weeks from now.
-func (a *Account) NewSession(address string) (*Session, error) {
+func (a *Account) NewSession() (*Session, error) {
 	// Check if ID is set
 	if !a.HasID() {
 		return nil, errors.New("failed to create a new session because the user has no ID")
@@ -70,7 +70,6 @@ func (a *Account) NewSession(address string) (*Session, error) {
 		-1,
 		a.ID,
 		tools.RandomToken(64),
-		address,
 		time.Now().AddDate(0, 0, 14),
 	}
 
@@ -83,9 +82,13 @@ func (a *Account) GetSessions() []*Session {
 		return nil
 	}
 
-	rows := database.DB.Query(`
+	rows, err := database.DB.Query(`
 	SELECT * FROM session
 	WHERE user_id == $1`, a.ID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
 
 	sessions := []*Session{}
 
@@ -95,7 +98,6 @@ func (a *Account) GetSessions() []*Session {
 			&ses.ID,
 			&ses.UserID,
 			&ses.SessionToken,
-			&ses.Address,
 			&ses.ExpiryDate,
 		)
 
@@ -108,9 +110,14 @@ func (a *Account) GetSessions() []*Session {
 // GetAccountByUsername retrieves a account from the database and parses
 // it into the account struct
 func GetAccountByUsername(username string) *Account {
-	rows := database.DB.Query(`
+	rows, err := database.DB.Query(`
 	SELECT * FROM account
 	WHERE username = $1;`, username)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
 
 	a := Account{}
 	for rows.Next() {
@@ -119,24 +126,30 @@ func GetAccountByUsername(username string) *Account {
 			&a.UserName,
 			&a.Password,
 		)
+		break
 	}
 
-	// Check if no user account is found
-	if a.UserName == "" {
+	// Check if the username and password are still empty
+	if a.UserName == "" || a.Password == nil {
 		return nil
 	}
 
+	// User exists, return it
 	return &a
 }
 
 // Save saves the user to the database.
 func (a *Account) Save() {
-	rows := database.DB.Query(`
+	rows, err := database.DB.Query(`
 	INSERT INTO account (username, password)
 	VALUES ($1, $2)
 	ON CONFLICT (username)
 	DO UPDATE SET password = $2
 	RETURNING id;`, a.UserName, a.Password)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
 	for rows.Next() {
 		rows.Scan(
@@ -151,17 +164,11 @@ type Session struct {
 	ID           int
 	UserID       int
 	SessionToken string
-	Address      string
 	ExpiryDate   time.Time
 }
 
 // Verify checks various attributes of the session to check if it's valid
-func (s *Session) Verify(address string) bool {
-	// Fail if the source IP is different
-	if address != s.Address {
-		return false
-	}
-
+func (s *Session) Verify() bool {
 	// Check expiry date, if expired delete from DB
 	if time.Until(s.ExpiryDate).Minutes() < 0.0 {
 		s.Delete()
@@ -180,9 +187,14 @@ func (s *Session) UpdateExpiryDate() {
 
 // GetSessionByToken retrieves a session object based on the provided token
 func GetSessionByToken(token string) *Session {
-	rows := database.DB.Query(`
+	rows, err := database.DB.Query(`
 	SELECT * FROM session
 	WHERE token = $1;`, token)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
 
 	s := Session{}
 	for rows.Next() {
@@ -190,7 +202,6 @@ func GetSessionByToken(token string) *Session {
 			&s.ID,
 			&s.UserID,
 			&s.SessionToken,
-			&s.Address,
 			&s.ExpiryDate,
 		)
 		break
@@ -203,11 +214,18 @@ func GetSessionByToken(token string) *Session {
 func (s *Session) Save() {
 	s.UpdateExpiryDate()
 
-	rows := database.DB.Query(`
-	INSERT INTO session (user_id, token, address, expiry_date)
-	VALUES ($1, $2, $3, $4)
-	ON CONFLICT (token) DO NOTHING;
-	`, s.UserID, s.SessionToken, s.Address, s.ExpiryDate)
+	rows, err := database.DB.Query(`
+	INSERT INTO session (user_id, token, expiry_date)
+	VALUES ($1, $2, $3)
+	ON CONFLICT (token)
+	DO 
+		UPDATE SET expiry_date = $3;
+	`, s.UserID, s.SessionToken, s.ExpiryDate)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 
 	for rows.Next() {
 		rows.Scan(
@@ -218,7 +236,10 @@ func (s *Session) Save() {
 
 // Delete deletes the session from the database
 func (s *Session) Delete() {
-	database.DB.Query(`
+	_, err := database.DB.Query(`
 	DELETE FROM session
 	WHERE id = $1`, s.ID)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
