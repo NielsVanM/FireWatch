@@ -10,12 +10,14 @@ type Device struct {
 	Latitude  float32
 }
 
+// Save stores the device in the database
 func (d *Device) Save() {
 	database.DB.Exec(`
 		INSERT INTO device (uuid, longitude, latitude)
 		VALUES ($1, $2, $3);`, d.UUID, d.Longitude, d.Latitude)
 }
 
+// GetAllDevices returns a list of all devices from the database
 func GetAllDevices() []*Device {
 	rows, _ := database.DB.Query(`
 	SELECT * FROM device;`)
@@ -36,6 +38,7 @@ func GetAllDevices() []*Device {
 	return devs
 }
 
+// GetDeviceByID retrievs a device from the database marked by the provided ID
 func GetDeviceByID(id int) *Device {
 	rows, _ := database.DB.Query(`
 	SELECT * FROM device

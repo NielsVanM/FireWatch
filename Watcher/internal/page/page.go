@@ -1,10 +1,11 @@
 package page
 
 import (
-	"fmt"
 	"html/template"
 	"io"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // TemplateFolder is the folder where the templates are located
@@ -42,9 +43,9 @@ func (p *Page) Parse() {
 	p.Template, err = template.ParseFiles(p.Templates...)
 	if err != nil {
 		if strings.Contains(err.Error(), "no such file") {
-			fmt.Println("Can't find file " + err.Error())
+			log.Error("Can't find file", err.Error())
 		}
-		fmt.Println("Failed to parse template " + err.Error())
+		log.Error("Failed to parse template", err.Error())
 	}
 }
 
@@ -62,7 +63,7 @@ func (p *Page) Render(w io.Writer) {
 
 	err := p.Template.Execute(w, p.Context)
 	if err != nil {
-		fmt.Println("PageParser", err.Error())
+		log.Warning("Failed to execute template", err.Error())
 	}
 }
 

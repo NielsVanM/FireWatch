@@ -1,5 +1,6 @@
 package models
 
+// SetupQueries is a list of strings that setup the database tables
 var SetupQueries = []string{
 	`CREATE TABLE account (
 		id SERIAL PRIMARY KEY,

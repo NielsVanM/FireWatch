@@ -2,13 +2,18 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/nielsvanm/firewatch/internal/database"
 	"github.com/nielsvanm/firewatch/internal/tools"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// ErrAccountHasNoID must be returned when an account doesn't have an ID, i.e.
+// it isn't saved in the database
+var ErrAccountHasNoID = errors.New("Account has no ID")
 
 // Account is an end-user in the application, it provides a username/password based
 // authentication method.
@@ -35,7 +40,7 @@ func NewAccount(username, password string) *Account {
 func (a *Account) SetPassword(password string) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
-		fmt.Println("Failed to hash user password")
+		log.Warn("Failed to hash user password", err.Error())
 		return
 	}
 	a.Password = hashedPassword
@@ -45,6 +50,11 @@ func (a *Account) SetPassword(password string) {
 func (a *Account) VerifyPassword(password string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword(a.Password, []byte(password))
 	if err != nil {
+
+		// Log any other error than mismatch
+		if err != bcrypt.ErrMismatchedHashAndPassword {
+			log.Warn("Failed to verify password", err.Error())
+		}
 		return false, err
 	}
 
@@ -62,7 +72,7 @@ func (a *Account) HasID() bool {
 func (a *Account) NewSession() (*Session, error) {
 	// Check if ID is set
 	if !a.HasID() {
-		return nil, errors.New("failed to create a new session because the user has no ID")
+		return nil, ErrAccountHasNoID
 	}
 
 	// Create session
@@ -86,7 +96,7 @@ func (a *Account) GetSessions() []*Session {
 	SELECT * FROM session
 	WHERE user_id == $1`, a.ID)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Warn("Failed to retrieve sessions from the database", err.Error())
 		return nil
 	}
 
@@ -115,7 +125,7 @@ func GetAccountByUsername(username string) *Account {
 	WHERE username = $1;`, username)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Info("Failed to retrieve user from database", err.Error())
 		return nil
 	}
 
@@ -148,7 +158,8 @@ func (a *Account) Save() {
 	RETURNING id;`, a.UserName, a.Password)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Warning("Failed to save account to the database", err.Error())
+		return
 	}
 
 	for rows.Next() {
@@ -192,7 +203,7 @@ func GetSessionByToken(token string) *Session {
 	WHERE token = $1;`, token)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Info("Failed to retrieve token from database", err.Error())
 		return nil
 	}
 
@@ -223,7 +234,7 @@ func (s *Session) Save() {
 	`, s.UserID, s.SessionToken, s.ExpiryDate)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Warning("Failed to save session to the database", err.Error())
 		return
 	}
 
@@ -240,6 +251,6 @@ func (s *Session) Delete() {
 	DELETE FROM session
 	WHERE id = $1`, s.ID)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Warn("Failed to delete session from database", err.Error())
 	}
 }

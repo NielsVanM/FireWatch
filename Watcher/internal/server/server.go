@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/gorilla/mux"
 )
 
@@ -77,19 +79,19 @@ func (r *Router) AddEndpoint(url string, function func(w http.ResponseWriter, r 
 
 // Start loads the routers and endpoints and starts the actual server
 func (s *Server) Start() {
-	fmt.Println("Starting webserver")
+	log.Info("Starting webserver")
 
 	// For every router and every endpoint within the router add the endpoint
 	// to the router by using the handlfunc function
 	for _, router := range s.routers {
-		fmt.Println("Registering middlware for", router.Name)
+		log.Info("Registering middlware for", router.Name)
 		for _, middle := range router.middleware {
 			router.router.Use(middle)
 		}
 
-		fmt.Println("Registering routes for", router.Name)
+		log.Info("Registering routes for", router.Name)
 		for _, endp := range router.endpoints {
-			fmt.Println("\tRegistered:", endp.URL)
+			log.Info("Registered:", endp.URL)
 			router.router.HandleFunc(endp.URL, endp.Func)
 		}
 		fmt.Println()

@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
+
 	// Import PQ for the sql package
 	_ "github.com/lib/pq"
 )
@@ -52,18 +54,16 @@ func (db *Database) Connect() {
 	// Connect
 	db.connection, err = sql.Open("postgres", connectionString)
 	if err != nil {
-		fmt.Println("Failed to connect to the postgres database")
-		return
+		log.Fatal("Failed to connecto to the database", err.Error())
 	}
 
 	// Ping the connection
 	err = db.connection.Ping()
 	if err != nil {
-		fmt.Println("Failed to ping the database server")
-		return
+		log.Fatal("Failed to ping the database server", err.Error())
 	}
 
-	fmt.Println("Succesfully connected to PostgresDB")
+	log.Info("Sucesfully connected to PostgresDB")
 }
 
 // AddTable adds a table to the setup sequence
@@ -75,20 +75,20 @@ func (db *Database) AddTable(query string) {
 func (db *Database) CreateTables() error {
 	tx, err := db.connection.Begin()
 	if err != nil {
-		fmt.Println("Failed to create a transaction, " + err.Error())
+		log.Error("Failed to create a transaction", err.Error())
 	}
 
 	for _, query := range db.setupQueries {
 		_, err := tx.Exec(query)
 		if err != nil {
-			fmt.Println("Database", err.Error())
+			log.Error("Failed to execute query", err.Error())
 			continue
 		}
 	}
 
 	err = tx.Commit()
 	if err != nil {
-		fmt.Println("Database", err.Error())
+		log.Error("Failed to commit database transaction", err.Error())
 	}
 
 	return nil
@@ -98,7 +98,7 @@ func (db *Database) CreateTables() error {
 func (db *Database) Exec(query string, args ...interface{}) {
 	_, err := db.connection.Exec(query, args...)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error("Failed to execute query", err.Error())
 	}
 }
 
@@ -107,17 +107,18 @@ func (db *Database) Exec(query string, args ...interface{}) {
 func (db *Database) ExecBatch(batch BatchQuery) {
 	tx, err := db.connection.Begin()
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error("Failed to create transaction", err.Error())
+		return
 	}
 	for _, vars := range batch.Values {
 		_, err = tx.Exec(batch.Query, vars...)
 		if err != nil {
-			fmt.Println(err.Error() + "\n" + batch.Query)
+			log.Error("Failed to execute query", err.Error())
 		}
 	}
 	err = tx.Commit()
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error("Failed to commit transaction", err.Error())
 	}
 }
 
