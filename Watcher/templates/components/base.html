@@ -1,20 +1,48 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>Dash - FireWatch</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
+<head>
+  <title>{{ template "title" . }} - FireWatch</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="/static/framework/bootstrap.css" crossorigin="anonymous">
-  </head>
-  <body>
-      hey
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="/static/framework/jquery.js" crossorigin="anonymous"></script>
-    <script src="/static/framework/popper.js" crossorigin="anonymous"></script>
-    <script src="/static/framework/bootstrap.js" crossorigin="anonymous"></script>
-  </body>
+
+  {{ template "css" .}}
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container">
+
+      <img class="navbar-brand" src="/static/images/FireEmblem.png" alt="FireWatch Logo">
+      <a class="navbar-brand" href="/">FireWatch</a>
+      <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#FireWatchNavigation"
+        aria-controls="FireWatchNavigation" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="FireWatchNavigation">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Dashboard <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/device/">Devices <span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container-fluid">
+    {{ template "content" . }}
+  </div>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="/static/framework/jquery.js" crossorigin="anonymous"></script>
+  <script src="/static/framework/popper.js" crossorigin="anonymous"></script>
+  <script src="/static/framework/bootstrap.js" crossorigin="anonymous"></script>
+</body>
+
 </html>
