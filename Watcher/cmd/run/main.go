@@ -4,7 +4,7 @@ import (
 	"github.com/nielsvanm/firewatch/views"
 
 	"github.com/nielsvanm/firewatch/internal/database"
-	"github.com/nielsvanm/firewatch/internal/middlware"
+	middleware "github.com/nielsvanm/firewatch/internal/middlware"
 	"github.com/nielsvanm/firewatch/internal/server"
 )
 
@@ -14,11 +14,13 @@ func main() {
 
 	// Create server and endpoints
 	unprotectedRouter := s.AddRouter("UnprotectedRouter", "/")
+	unprotectedRouter.AddMiddlewware(middleware.HTTPLogMiddleware)
 	unprotectedRouter.AddEndpoint("/auth/login/", views.LoginView)
 	unprotectedRouter.AddEndpoint("/auth/logout/", views.LogoutView)
 
 	protectedRouter := s.AddRouter("ProtectedRouter", "/")
-	protectedRouter.AddMiddlewware(middlware.AuthorizationMiddleware)
+	protectedRouter.AddMiddlewware(middleware.HTTPLogMiddleware)
+	protectedRouter.AddMiddlewware(middleware.AuthorizationMiddleware)
 	protectedRouter.AddEndpoint("/", views.DashboardView)
 
 	s.Start()
