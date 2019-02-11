@@ -3,6 +3,8 @@ package middleware
 import (
 	"net/http"
 
+	"github.com/gorilla/context"
+
 	"github.com/nielsvanm/firewatch/internal/models"
 )
 
@@ -24,6 +26,11 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 
 		if sess.Verify() {
 			sess.Save()
+
+			// Retrieve user
+			user := models.GetAccountByID(sess.UserID)
+			context.Set(r, "user", user)
+
 			next.ServeHTTP(w, r)
 			return
 		}
