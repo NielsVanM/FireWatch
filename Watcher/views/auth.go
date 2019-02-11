@@ -48,7 +48,7 @@ func LoginView(w http.ResponseWriter, r *http.Request) {
 
 		// Set cookie and redirect
 		http.SetCookie(w, &sessionCookie)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
@@ -67,7 +67,7 @@ func invalidUsernamePassword(w http.ResponseWriter) {
 // LogoutView deletes the session of the user when he visits the view, after
 // deletion of the session it redirects the user to the login page.
 func LogoutView(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	if r.Method == "POST" {
 		ck, err := r.Cookie("session-token")
 		if err != nil {
 			fmt.Println(err.Error())
@@ -77,6 +77,10 @@ func LogoutView(w http.ResponseWriter, r *http.Request) {
 		sess := models.GetSessionByToken(ck.Value)
 		sess.Delete()
 
-		http.Redirect(w, r, "/auth/login/", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/auth/login/", http.StatusSeeOther)
+	}
+
+	if r.Method == "GET" {
+		http.Redirect(w, r, "/auth/login/", http.StatusSeeOther)
 	}
 }
