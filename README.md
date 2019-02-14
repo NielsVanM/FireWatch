@@ -15,7 +15,9 @@ Deployment will be simplified by a docker setup. However, this is currently not 
 As any project we rely on others to build our systems. Special thanks to the creators of GoLang and the creates of the following packages.
 
 * [MUX](https://www.github.com/gorilla/mux) HTTP Router
+* [Context](https://www.github.com/gorilla/context) Context passing
 * [PQ](https://www.github.com/lib/pq) Postgres Database
 * [BCrypt](https://www.golang.org/x/crypto/bcrypt) Hashing
+* [LogRus](https://www.github.com/sirupsen/logrus) Logging
 
 For instructions on how to install the dependencies see the development section of this readme.
