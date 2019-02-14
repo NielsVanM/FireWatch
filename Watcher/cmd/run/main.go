@@ -4,7 +4,7 @@ import (
 	"github.com/nielsvanm/firewatch/views"
 
 	"github.com/nielsvanm/firewatch/internal/database"
-	middleware "github.com/nielsvanm/firewatch/internal/middlware"
+	"github.com/nielsvanm/firewatch/internal/middleware"
 	"github.com/nielsvanm/firewatch/internal/server"
 )
 
