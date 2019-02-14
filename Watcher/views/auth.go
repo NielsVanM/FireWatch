@@ -6,12 +6,23 @@ import (
 
 	"github.com/nielsvanm/firewatch/internal/models"
 	"github.com/nielsvanm/firewatch/internal/page"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // LoginView allows the user to login
 func LoginView(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		p := page.NewPage("auth/login.html")
+
+		// Get referal
+		refURL, ok := r.URL.Query()["nextPage"]
+		log.Info(refURL)
+		if ok {
+			p.AddContext("nextPage", refURL[0])
+			p.AddContext("message", page.NewMessage(page.MessageInfo, "You need to be logged in to access this page.", false))
+		}
+
 		p.Render(w)
 		return
 	}
@@ -48,6 +59,12 @@ func LoginView(w http.ResponseWriter, r *http.Request) {
 
 		// Set cookie and redirect
 		http.SetCookie(w, &sessionCookie)
+
+		// Check if there is a referal
+		if nextPage := r.URL.Query()["nextPage"]; nextPage != nil {
+			http.Redirect(w, r, nextPage[0], http.StatusSeeOther)
+			return
+		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }

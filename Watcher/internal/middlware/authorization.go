@@ -17,7 +17,7 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 		// Get token from cookies
 		token, err := r.Cookie("session-token")
 		if err != nil {
-			http.Redirect(w, r, authRedirectURL, http.StatusSeeOther)
+			http.Redirect(w, r, authRedirectURL+"?nextPage="+r.RequestURI, http.StatusSeeOther)
 			return
 		}
 
@@ -35,6 +35,6 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		http.Redirect(w, r, authRedirectURL, http.StatusSeeOther)
+		http.Redirect(w, r, authRedirectURL+"?nextPage="+r.RequestURI, http.StatusSeeOther)
 	})
 }
