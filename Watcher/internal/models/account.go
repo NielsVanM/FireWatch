@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 
@@ -100,6 +101,8 @@ func (a *Account) GetSessions() []*Session {
 		return nil
 	}
 
+	defer rows.Close()
+
 	sessions := []*Session{}
 
 	for rows.Next() {
@@ -117,6 +120,13 @@ func (a *Account) GetSessions() []*Session {
 	return sessions
 }
 
+// DeleteAllSessions deletes all the sessions from the current account
+func (a *Account) DeleteAllSessions() {
+	database.DB.Exec(`
+	DELETE FROM session
+	WHERE user_id = $1`, a.ID)
+}
+
 // GetAccountByID retrieves a account form the database by the provided by the ID
 // it returns a pointer to the account if it exists, if the account can't be found
 // it returns nil
@@ -129,6 +139,8 @@ func GetAccountByID(id int) *Account {
 		log.Warn("Failed to retrieve user from database", err.Error())
 		return nil
 	}
+
+	defer rows.Close()
 
 	a := Account{}
 	for rows.Next() {
@@ -161,6 +173,8 @@ func GetAccountByUsername(username string) *Account {
 		return nil
 	}
 
+	defer rows.Close()
+
 	a := Account{}
 	for rows.Next() {
 		rows.Scan(
@@ -182,23 +196,48 @@ func GetAccountByUsername(username string) *Account {
 
 // Save saves the user to the database.
 func (a *Account) Save() {
-	rows, err := database.DB.Query(`
-	INSERT INTO account (username, password)
-	VALUES ($1, $2)
-	ON CONFLICT (username)
-	DO UPDATE SET password = $2
-	RETURNING id;`, a.UserName, a.Password)
+	var rows *sql.Rows
+	var err error
 
-	if err != nil {
-		log.Warning("Failed to save account to the database", err.Error())
-		return
+	if a.ID == -1 {
+		rows, err = database.DB.Query(`
+		INSERT INTO account (username, password)
+		VALUES ($1, $2)
+		ON CONFLICT DO NOTHING
+		RETURNING id;`, a.UserName, a.Password)
+
+		if err != nil {
+			log.Warning("Failed to save account to the database", err.Error())
+			return
+		}
+	} else {
+		rows, err = database.DB.Query(`
+		UPDATE account
+		SET password=$1
+		WHERE id = $2;`, a.Password, a.ID)
 	}
+
+	defer rows.Close()
 
 	for rows.Next() {
 		rows.Scan(
 			&a.ID,
 		)
 	}
+}
+
+// Delete removes the account from the database along with it's sessions, the
+// object still exists in memory
+func (a *Account) Delete() {
+	// Delete sessions
+	database.DB.Exec(`
+	DELETE FROM session
+	WHERE user_id = $1`, a.ID)
+
+	// Delete account
+	database.DB.Exec(`
+	DELETE FROM account
+	WHERE id = $1;`, a.ID)
 }
 
 // Session is a structure representing a source ip an d token, it can be used
@@ -239,6 +278,8 @@ func GetSessionByToken(token string) *Session {
 		return nil
 	}
 
+	defer rows.Close()
+
 	s := Session{}
 	for rows.Next() {
 		rows.Scan(
@@ -270,6 +311,8 @@ func (s *Session) Save() {
 		return
 	}
 
+	defer rows.Close()
+
 	for rows.Next() {
 		rows.Scan(
 			&s.ID,
@@ -279,10 +322,7 @@ func (s *Session) Save() {
 
 // Delete deletes the session from the database
 func (s *Session) Delete() {
-	_, err := database.DB.Query(`
+	database.DB.Exec(`
 	DELETE FROM session
 	WHERE id = $1`, s.ID)
-	if err != nil {
-		log.Warn("Failed to delete session from database", err.Error())
-	}
 }

@@ -22,6 +22,10 @@ func main() {
 	protectedRouter.AddMiddlewware(middleware.HTTPLogMiddleware)
 	protectedRouter.AddMiddlewware(middleware.AuthorizationMiddleware)
 	protectedRouter.AddEndpoint("/", views.DashboardView)
+	protectedRouter.AddEndpoint("/account/", views.AccountView)
+	protectedRouter.AddEndpoint("/account/all-device-logout/", views.LogOutAllDevicesView)
+	protectedRouter.AddEndpoint("/account/change-password/", views.ChangePasswordView)
+	protectedRouter.AddEndpoint("/account/delete/", views.DeleteAccountView)
 
 	s.Start()
 }

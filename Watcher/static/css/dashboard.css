@@ -16,6 +16,10 @@ nav img {
   padding-right: 1em;
 }
 
+.no-border {
+  border-radius: 0px;
+}
+
 body {
   background-color: #e6e6e6;
 }

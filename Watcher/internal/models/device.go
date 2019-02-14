@@ -22,6 +22,8 @@ func GetAllDevices() []*Device {
 	rows, _ := database.DB.Query(`
 	SELECT * FROM device;`)
 
+	defer rows.Close()
+
 	devs := []*Device{}
 	for rows.Next() {
 		d := Device{}
@@ -43,6 +45,8 @@ func GetDeviceByID(id int) *Device {
 	rows, _ := database.DB.Query(`
 	SELECT * FROM device
 	WHERE id = $1;`, id)
+
+	defer rows.Close()
 
 	d := Device{}
 	for rows.Next() {

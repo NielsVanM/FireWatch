@@ -1,0 +1,41 @@
+body {
+  color: #4d4d4d;
+}
+
+nav {
+  margin-bottom: 1em;
+}
+
+nav img {
+  width: 30px;
+  height: auto;
+}
+
+.row {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.no-border {
+  border-radius: 0px;
+}
+
+.title {
+  font-size: 3em;
+  border-bottom: 1px solid lightgrey;
+  border-radius: 2px;
+}
+
+.btn-group-vertical {
+  -ms-flex-line-pack: center;
+      align-content: center;
+}
+
+.btn.inactive {
+  border: 1px solid lightgrey;
+}
+
+.btn.inactive:hover {
+  background-color: white;
+  cursor: default;
+}
