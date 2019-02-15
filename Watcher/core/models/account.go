@@ -7,8 +7,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/nielsvanm/firewatch/internal/database"
-	"github.com/nielsvanm/firewatch/internal/tools"
+	"github.com/nielsvanm/firewatch/core/database"
+	"github.com/nielsvanm/firewatch/core/tools"
 	"golang.org/x/crypto/bcrypt"
 )
 

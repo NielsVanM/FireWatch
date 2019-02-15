@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/nielsvanm/firewatch/internal/database"
-	"github.com/nielsvanm/firewatch/internal/models"
+	"github.com/nielsvanm/firewatch/core/database"
+	"github.com/nielsvanm/firewatch/core/models"
 )
 
 func main() {

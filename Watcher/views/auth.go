@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/nielsvanm/firewatch/internal/models"
-	"github.com/nielsvanm/firewatch/internal/page"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/nielsvanm/firewatch/core/models"
+	"github.com/nielsvanm/firewatch/core/page"
 )
 
 // LoginView allows the user to login
@@ -17,7 +15,6 @@ func LoginView(w http.ResponseWriter, r *http.Request) {
 
 		// Get referal
 		refURL, ok := r.URL.Query()["nextPage"]
-		log.Info(refURL)
 		if ok {
 			p.AddContext("nextPage", refURL[0])
 			p.AddContext("message", page.NewMessage(page.MessageInfo, "You need to be logged in to access this page.", false))

@@ -1,6 +1,6 @@
 package models
 
-import "github.com/nielsvanm/firewatch/internal/database"
+import "github.com/nielsvanm/firewatch/core/database"
 
 // Device represents a physical node in the network
 type Device struct {

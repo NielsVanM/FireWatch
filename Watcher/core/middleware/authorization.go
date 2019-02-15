@@ -5,7 +5,7 @@ import (
 
 	"github.com/gorilla/context"
 
-	"github.com/nielsvanm/firewatch/internal/models"
+	"github.com/nielsvanm/firewatch/core/models"
 )
 
 var authRedirectURL = "/auth/login/"

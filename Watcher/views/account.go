@@ -3,11 +3,11 @@ package views
 import (
 	"net/http"
 
-	"github.com/nielsvanm/firewatch/internal/tools"
+	"github.com/nielsvanm/firewatch/core/tools"
 
 	"github.com/gorilla/context"
-	"github.com/nielsvanm/firewatch/internal/models"
-	"github.com/nielsvanm/firewatch/internal/page"
+	"github.com/nielsvanm/firewatch/core/models"
+	"github.com/nielsvanm/firewatch/core/page"
 )
 
 // AccountView shows the account overview page

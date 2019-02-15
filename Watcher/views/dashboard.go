@@ -5,7 +5,7 @@ import (
 
 	"github.com/gorilla/context"
 
-	"github.com/nielsvanm/firewatch/internal/page"
+	"github.com/nielsvanm/firewatch/core/page"
 )
 
 func DashboardView(w http.ResponseWriter, r *http.Request) {
