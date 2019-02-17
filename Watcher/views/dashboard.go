@@ -8,6 +8,7 @@ import (
 	"github.com/nielsvanm/firewatch/core/page"
 )
 
+// DashboardView shows a general overview of the application status
 func DashboardView(w http.ResponseWriter, r *http.Request) {
 	p := page.NewPage("components/base.html", "dashboard.html")
 	p.AddContext("user", context.Get(r, "user"))

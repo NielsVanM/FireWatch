@@ -40,6 +40,25 @@ func GetAllDevices() []*Device {
 	return devs
 }
 
+// GetAllDeviceCount returns the amount of devices currently registered in
+// the database
+func GetAllDeviceCount() int {
+	rows, _ := database.DB.Query(`
+	SELECT count(id) FROM device;`)
+
+	defer rows.Close()
+
+	count := 0
+	for rows.Next() {
+		rows.Scan(
+			&count,
+		)
+		break
+	}
+
+	return count
+}
+
 // GetDeviceByID retrievs a device from the database marked by the provided ID
 func GetDeviceByID(id int) *Device {
 	rows, _ := database.DB.Query(`

@@ -81,7 +81,7 @@ func (a *Account) NewSession() (*Session, error) {
 		-1,
 		a.ID,
 		tools.RandomToken(64),
-		time.Now().AddDate(0, 0, 14),
+		time.Now().AddDate(0, 0, 1),
 	}
 
 	return &s, nil

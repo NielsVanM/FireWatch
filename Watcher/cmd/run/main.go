@@ -35,5 +35,7 @@ func main() {
 	protectedRouter.AddEndpoint("/account/change-password/", views.ChangePasswordView)
 	protectedRouter.AddEndpoint("/account/delete/", views.DeleteAccountView)
 
+	protectedRouter.AddEndpoint("/device/", views.DeviceOverview)
+
 	s.Start()
 }
