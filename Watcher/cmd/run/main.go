@@ -3,14 +3,20 @@ package main
 import (
 	"github.com/nielsvanm/firewatch/views"
 
+	"github.com/nielsvanm/firewatch/core/config"
 	"github.com/nielsvanm/firewatch/core/database"
 	"github.com/nielsvanm/firewatch/core/middleware"
 	"github.com/nielsvanm/firewatch/core/server"
 )
 
 func main() {
-	var s = server.NewServer(8000)
-	database.NewDB("postgres", "Password8", "firewatch", "localhost", 5432)
+
+	cfg := config.LoadConfig("./configs/config.json")
+	serverCfg := cfg.Server
+	dbCfg := cfg.Database
+
+	var s = server.NewServer(serverCfg.Port)
+	database.NewDB(dbCfg.Username, dbCfg.Password, dbCfg.Name, dbCfg.Host, dbCfg.Port)
 
 	// Create server and endpoints
 	unprotectedRouter := s.AddRouter("UnprotectedRouter", "/")
