@@ -17,7 +17,7 @@ type Server struct {
 	masterRouter *mux.Router
 }
 
-// Router an representation of the mux.router with extra functionality
+// Router is an implementation of the mux.router with extra functionality
 type Router struct {
 	Name string
 
@@ -30,6 +30,24 @@ type Router struct {
 type Endpoint struct {
 	URL  string
 	Func func(w http.ResponseWriter, r *http.Request)
+}
+
+// Route is a representation of an endpoint, a route has SubRoutes wich append
+// to the parents endpoint string. This allows for a nested overview of the
+// application routes
+type Route struct {
+	Endpoint  string
+	Function  func(w http.ResponseWriter, r *http.Request)
+	SubRoutes []*Route
+}
+
+// NewRoute is the constructor of the type Route
+func NewRoute(e string, f func(w http.ResponseWriter, r *http.Request), sr ...*Route) *Route {
+	nr := Route{
+		e, f, sr,
+	}
+
+	return &nr
 }
 
 // NewServer is the constructor of the Server struct
@@ -75,6 +93,30 @@ func (r *Router) AddEndpoint(url string, function func(w http.ResponseWriter, r 
 	}
 
 	r.endpoints = append(r.endpoints, &e)
+}
+
+// ParseRouteMap takes a route object and parses it into all the defined
+// endpoints
+func (r *Router) ParseRouteMap(route *Route) {
+	r.parseRoute("", route)
+}
+
+func (r *Router) parseRoute(prefix string, route *Route) {
+	// If the subroutes aren't nil loop over them
+	for _, subRoute := range route.SubRoutes {
+		if subRoute == nil {
+			continue
+		}
+		// Check if the subRoute has a function
+		if subRoute.Function != nil {
+			// Create endpoint
+			r.AddEndpoint(prefix+subRoute.Endpoint, subRoute.Function)
+		}
+
+		// Parse the new route
+		r.parseRoute(prefix+subRoute.Endpoint, subRoute)
+	}
+
 }
 
 // Start loads the routers and endpoints and starts the actual server
