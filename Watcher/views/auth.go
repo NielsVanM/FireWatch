@@ -58,7 +58,7 @@ func LoginView(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &sessionCookie)
 
 		// Check if there is a referal
-		if nextPage := r.URL.Query()["nextPage"]; nextPage != nil {
+		if nextPage := r.URL.Query()["nextPage"]; nextPage[0] != "" {
 			http.Redirect(w, r, nextPage[0], http.StatusSeeOther)
 			return
 		}
