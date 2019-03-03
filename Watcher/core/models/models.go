@@ -13,6 +13,11 @@ var SetupQueries = []string{
 		token TEXT UNIQUE, 
 		expiry_date TIMESTAMP
 	);`,
+	`CREATE TABLE apitoken (
+		id SERIAL PRIMARY KEY,
+		user_id INT REFERENCES account(id),
+		token TEXT UNIQUE
+	)`,
 	`CREATE TABLE device (
 		id SERIAL PRIMARY KEY,
 		uuid TEXT UNIQUE,

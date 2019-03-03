@@ -13,9 +13,14 @@ import (
 // AccountView shows the account overview page
 func AccountView(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
+		// Get API tokens
+		account := context.Get(r, "user").(*models.Account)
+		tokens := models.GetAllAPITokensByAccount(account)
+
 		// Handle wegpage
 		p := page.NewPage("components/base.html", "account/overview.html")
-		p.AddContext("user", context.Get(r, "user"))
+		p.AddContext("user", account)
+		p.AddContext("apitokens", tokens)
 		p.Render(w)
 	}
 }
@@ -25,7 +30,7 @@ func AccountView(w http.ResponseWriter, r *http.Request) {
 func LogOutAllDevicesView(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		user := context.Get(r, "user").(*models.Account)
-		user.DeleteAllSessions()
+		models.DeleteAllSessions(user)
 
 		http.Redirect(w, r, "/account/", http.StatusSeeOther)
 	}
