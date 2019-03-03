@@ -11,8 +11,9 @@ type ApplicationConfig struct {
 }
 
 type Server struct {
-	Host string `json:"host,omitempty"`
-	Port int    `json:"port,omitempty"`
+	Host      string `json:"host,omitempty"`
+	Port      int    `json:"port,omitempty"`
+	StaticDir string `json:"static_dir,omitempty"`
 }
 
 type Database struct {

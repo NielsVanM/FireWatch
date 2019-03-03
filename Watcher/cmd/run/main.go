@@ -25,14 +25,16 @@ func main() {
 
 	// Create server and endpoints
 	var s = server.NewServer(cfg.Server.Port)
+	s.SetStaticDir(cfg.Server.StaticDir)
+
+	// Add logging middleware
+	s.MasterRouter.Use(middleware.HTTPLogMiddleware)
 
 	unprotectedRouter := s.AddRouter("UnprotectedRouter", "/")
-	unprotectedRouter.AddMiddlewware(middleware.HTTPLogMiddleware)
 	unprotectedRouter.ParseRouteMap(routes.UnprotectedRoutes)
 
 	protectedRouter := s.AddRouter("ProtectedRouter", "/")
-	protectedRouter.AddMiddlewware(middleware.HTTPLogMiddleware)
-	protectedRouter.AddMiddlewware(middleware.AuthorizationMiddleware)
+	protectedRouter.AddMiddleware(middleware.AuthorizationMiddleware)
 	protectedRouter.ParseRouteMap(routes.ProtectedRoutes)
 
 	s.Start()

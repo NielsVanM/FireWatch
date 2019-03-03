@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/nielsvanm/firewatch/core/middleware"
-
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
@@ -17,7 +15,9 @@ type Server struct {
 	ListenPort int
 
 	routers      []*Router
-	masterRouter *mux.Router
+	MasterRouter *mux.Router
+
+	staticDirectory string
 }
 
 // Router is an implementation of the mux.router with extra functionality
@@ -61,6 +61,7 @@ func NewServer(port int) *Server {
 		port,
 		[]*Router{},
 		mux.NewRouter(),
+		"./static/",
 	}
 
 	return &s
@@ -69,7 +70,7 @@ func NewServer(port int) *Server {
 // AddRouter adds a router to the server with the prefix as url and the selected middlware
 func (s *Server) AddRouter(name, prefix string) *Router {
 	// Create mux subrouter linked to the master router
-	mr := s.masterRouter.PathPrefix(prefix).Subrouter()
+	mr := s.MasterRouter.PathPrefix(prefix).Subrouter()
 
 	// Create router obj
 	r := Router{
@@ -85,8 +86,8 @@ func (s *Server) AddRouter(name, prefix string) *Router {
 	return &r
 }
 
-// AddMiddlewware adds middleware to the router
-func (r *Router) AddMiddlewware(function ...mux.MiddlewareFunc) {
+// AddMiddleware adds middleware to the router
+func (r *Router) AddMiddleware(function ...mux.MiddlewareFunc) {
 	r.middleware = append(r.middleware, function...)
 }
 
@@ -124,6 +125,11 @@ func (r *Router) parseRoute(prefix string, route *Route) {
 
 }
 
+// SetStaticDir sets the static file directory to a path
+func (s *Server) SetStaticDir(path string) {
+	s.staticDirectory = path
+}
+
 // Start loads the routers and endpoints and starts the actual server
 func (s *Server) Start() {
 	log.Info("Starting webserver")
@@ -131,7 +137,7 @@ func (s *Server) Start() {
 	// For every router and every endpoint within the router add the endpoint
 	// to the router by using the handlfunc function
 	for _, router := range s.routers {
-		log.Info("Registering middlware for", router.Name)
+		log.Info("Registering middleware for", router.Name)
 		for _, middle := range router.middleware {
 			router.router.Use(middle)
 		}
@@ -145,10 +151,9 @@ func (s *Server) Start() {
 		fmt.Println()
 	}
 
-	s.masterRouter.Use(middleware.HTTPLogMiddleware)
-	s.masterRouter.PathPrefix("/static/").Handler(
-		http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
+	s.MasterRouter.PathPrefix("/static/").Handler(
+		http.StripPrefix("/static/", http.FileServer(http.Dir(s.staticDirectory))))
 
 	// Start the server
-	http.ListenAndServe(fmt.Sprintf(":%d", s.ListenPort), s.masterRouter)
+	http.ListenAndServe(fmt.Sprintf(":%d", s.ListenPort), s.MasterRouter)
 }
