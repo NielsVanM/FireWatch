@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/nielsvanm/firewatch/core/middleware"
+
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
@@ -143,6 +145,7 @@ func (s *Server) Start() {
 		fmt.Println()
 	}
 
+	s.masterRouter.Use(middleware.HTTPLogMiddleware)
 	s.masterRouter.PathPrefix("/static/").Handler(
 		http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
