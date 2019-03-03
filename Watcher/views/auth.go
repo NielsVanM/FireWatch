@@ -3,6 +3,7 @@ package views
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/nielsvanm/firewatch/core/models"
 	"github.com/nielsvanm/firewatch/core/page"
@@ -45,13 +46,14 @@ func LoginView(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Generate session & cookie
-		sess, _ := u.NewSession()
+		sess, _ := models.NewSession(u)
 		sess.Save()
 
 		sessionCookie := http.Cookie{
-			Name:  "session-token",
-			Value: sess.SessionToken,
-			Path:  "/",
+			Name:    "session-token",
+			Value:   sess.SessionToken,
+			Path:    "/",
+			Expires: time.Now().AddDate(0, 0, 1),
 		}
 
 		// Set cookie and redirect
