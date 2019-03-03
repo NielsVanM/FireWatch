@@ -9,26 +9,33 @@
 <div class="container">
     <div class="row">
         <div class="col-12">
-            <h1 class="title">User Profile</h1>
+            <div class="title">
+                <h1 class="">User Profile</h1>
+                <div class="dropdown open">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-cogs"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="triggerId">
+                        <div class="btn-group-vertical">
+                            <form action="/account/all-device-logout/" method="post">
+                                <button name="device_logout" id="device_logout" class="dropdown-item no-border" role="button">Log
+                                    out from all
+                                    devices</button>
+                            </form>
+                            <a name="change_password" id="change_password" class="dropdown-item" href="/account/change-password/"
+                                role="button">Change Password</a>
+                            <a name="delete_account" id="delete_account" class="dropdown-item" href="/account/delete/"
+                                role="button">Delete
+                                Account</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-12 col-md-6">
+        <div class="col-12">
             {{ with .user }}
             {{ end }}
-        </div>
-        <div class="col-12 col-md-2 offset-md-3">
-            <div class="btn-group-vertical">
-                <a name="actions" id="actions" class="btn btn-outline-light inactive" role="button">Actions</a>
-                <form action="/account/all-device-logout/" method="post">
-                    <button name="device_logout" id="device_logout" class="btn btn-info no-border" role="button">Log out from all
-                        devices</button>
-                </form>
-                <a name="change_password" id="change_password" class="btn btn-info" href="/account/change-password/"
-                    role="button">Change Password</a>
-                <a name="delete_account" id="delete_account" class="btn btn-danger" href="/account/delete/"
-                    role="button">Delete Account</a>
-            </div>
         </div>
     </div>
 </div>
