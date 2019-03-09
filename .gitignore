@@ -13,3 +13,17 @@
 
 # VSCode folder
 .vscode/
+
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env.local
+.env.*.local
+
+.DS_Store
+node_modules
+/dist
