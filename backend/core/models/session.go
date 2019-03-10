@@ -59,6 +59,11 @@ func GetSessionByToken(token string) *Session {
 		break
 	}
 
+	// Check if we actually got a result
+	if s.SessionToken == "" {
+		return nil
+	}
+
 	return &s
 }
 

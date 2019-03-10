@@ -154,6 +154,7 @@ func (s *Server) Start() {
 	s.MasterRouter.PathPrefix("/static/").Handler(
 		http.StripPrefix("/static/", http.FileServer(http.Dir(s.staticDirectory))))
 
+	log.Info("Starting server")
 	// Start the server
-	http.ListenAndServe(fmt.Sprintf(":%d", s.ListenPort), s.MasterRouter)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", s.ListenPort), s.MasterRouter))
 }
