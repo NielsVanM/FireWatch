@@ -2,7 +2,7 @@
 This is the basic API documentation, a better way of documenting the API will be released at a later date. A general response to any request is in the format of:
 ```json
     {
-        "succes": <true/false>,
+        "succes": "<true/false>",
         "status_code": "<status_string>",
         "data": "object with requested data"
     }
