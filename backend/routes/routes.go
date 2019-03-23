@@ -8,9 +8,10 @@ import (
 // UnprotectedRoutes is a collection of routes not protected by the authorization
 // middleware
 var UnprotectedRoutes = server.NewRoute("", "GET", nil,
-	server.NewRoute("/api/v1/", "GET,POST", nil,
+	server.NewRoute("/api/v1/", "POST", nil,
 		server.NewRoute("login/", "POST", api.Login, nil),
 		server.NewRoute("logout/", "POST", api.Logout, nil),
+		server.NewRoute("verify/", "POST", api.VerifyToken, nil),
 	),
 )
 

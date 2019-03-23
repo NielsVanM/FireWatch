@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -155,6 +156,13 @@ func (s *Server) Start() {
 		http.StripPrefix("/static/", http.FileServer(http.Dir(s.staticDirectory))))
 
 	log.Info("Starting server")
+
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
+
 	// Start the server
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", s.ListenPort), s.MasterRouter))
+	log.Fatal(
+		http.ListenAndServe(fmt.Sprintf(":%d", s.ListenPort), handlers.CORS(headersOk, originsOk, methodsOk)(s.MasterRouter)),
+	)
 }

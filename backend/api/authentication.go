@@ -19,6 +19,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// Load data
 	data, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
 	if err != nil {
 		log.Error("Failed to read data from request body")
 		NewResp(false, StatusInternalError).Write(w)
@@ -62,6 +63,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	go sess.Save()
 	NewResp(true, StatusOkay).
 		AddData("token", sess.SessionToken).
+		AddData("user", acc).
 		Write(w)
 
 }
@@ -74,6 +76,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
 	if err != nil {
 		NewResp(false, StatusInternalError).
 			AddData("message", "failed to read request body").
@@ -97,4 +100,38 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 	sess.Delete()
 	NewResp(true, StatusOkay).Write(w)
+}
+
+// VerifyToken verifies if a token is still valid
+func VerifyToken(w http.ResponseWriter, r *http.Request) {
+	type VerifyTokenRequest struct {
+		Token string `json:"token"`
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil {
+		NewResp(false, StatusInvalidRequest).Write(w)
+		return
+	}
+
+	vtr := VerifyTokenRequest{}
+	err = json.Unmarshal(data, &vtr)
+	if err != nil {
+		NewResp(false, StatusInternalError).Write(w)
+		log.Warn(err.Error())
+		return
+	}
+
+	t := models.GetSessionByToken(vtr.Token)
+	if t == nil {
+		NewResp(false, StatusInvalidToken).Write(w)
+		return
+	}
+	if t.Verify() {
+		NewResp(true, StatusOkay).Write(w)
+		return
+	}
+
+	NewResp(false, "If you see this error please contact the site owner.").Write(w)
 }
