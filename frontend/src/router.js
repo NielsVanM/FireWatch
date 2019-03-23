@@ -32,11 +32,17 @@ var router = new VueRouter({
                 },{
                     path: "device/",
                     name: "device",
-                    commponents: {int: DeviceOverView}
+                    commponents: {int: DeviceOverView},
+                    meta: {
+                        protected: true
+                    }
                 },{
                     path: "settings/",
                     name: "settings",
-                    components: {int: DeviceOverView}
+                    components: {int: DeviceOverView},
+                    meta: {
+                        protected: true
+                    }
                 }
             ]
         },{
@@ -58,7 +64,7 @@ router.beforeEach((to, from, next) => {
         next()
     }
     if (to.name == "login") {
-        return
+        next()
     }
 
     // Verify token against backend
@@ -81,6 +87,9 @@ router.beforeEach((to, from, next) => {
                 }
             }
             )
+            .catch(() => {
+                next('/login/?next=' + to.path)
+            })
     } else {
         next('/login/?next=' + to.path)
     }
