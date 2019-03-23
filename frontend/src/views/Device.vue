@@ -1,12 +1,10 @@
 <template>
-  <v-container fluid>
-      hey there
-  </v-container>
+	<span>hey there</span>
 </template>
 
 <script>
-export default {
-    name: "DeviceOverView",
-};
+	export default {
+		name: "DeviceOverView"
+	};
 </script>
 
