@@ -64,7 +64,7 @@ router.beforeEach((to, from, next) => {
         next()
     }
     if (to.name == "login") {
-        next()
+        return
     }
 
     // Verify token against backend
