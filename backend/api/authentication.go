@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/gorilla/context"
+
 	"github.com/nielsvanm/firewatch/core/models"
 	log "github.com/sirupsen/logrus"
 )
@@ -102,6 +104,21 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	NewResp(true, StatusOkay).Write(w)
 }
 
+// LogoutAllDevices reads a token from the headers and
+func LogoutAllDevices(w http.ResponseWriter, r *http.Request) {
+	// Get token from headerss
+	u := context.Get(r, "user").(*models.Account)
+	if u == nil {
+		NewResp(false, StatusInternalError).Write(w)
+		return
+	}
+
+	// Delete all sessions from the user
+	models.DeleteAllSessions(u)
+
+	NewResp(true, StatusOkay).Write(w)
+}
+
 // VerifyToken verifies if a token is still valid
 func VerifyToken(w http.ResponseWriter, r *http.Request) {
 	type VerifyTokenRequest struct {
@@ -128,7 +145,12 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
 		NewResp(false, StatusInvalidToken).Write(w)
 		return
 	}
+
 	if t.Verify() {
+		// Update expiry and save
+		t.UpdateExpiryDate()
+		go t.Save()
+
 		NewResp(true, StatusOkay).Write(w)
 		return
 	}

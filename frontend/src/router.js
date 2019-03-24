@@ -2,10 +2,12 @@ import Vue from "vue"
 import VueRouter from "vue-router"
 import Axios from "axios"
 
-import LoginView from "@/views/Login.vue"
+import LoginView from "@/views/auth/Login.vue"
+import LogoutView from "@/views/auth/Logout.vue"
 import Base from "@/views/Base.vue"
 import Dashboard from "@/views/Dashboard.vue"
 import DeviceOverView from "@/views/Device.vue"
+import AccountView from "@/views/Account.vue"
 
 Vue.use(VueRouter)
 
@@ -37,9 +39,24 @@ var router = new VueRouter({
                         protected: true
                     }
                 },{
+                    path: "account/",
+                    name: "account",
+                    components: {int: AccountView},
+                    meta: {
+                        protected: true
+                    }
+                },{
                     path: "settings/",
                     name: "settings",
                     components: {int: DeviceOverView},
+                    meta: {
+                        protected: true
+                    }
+                },
+                {
+                    path: "logout/",
+                    name: "logout",
+                    components: {int: LogoutView},
                     meta: {
                         protected: true
                     }
@@ -85,8 +102,7 @@ router.beforeEach((to, from, next) => {
                     }
                     next('/login/?next=' + to.path)
                 }
-            }
-            )
+            })
             .catch(() => {
                 next('/login/?next=' + to.path)
             })

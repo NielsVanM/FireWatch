@@ -9,6 +9,7 @@ import store from "./store.js"
 
 // Set up AXIOS
 Vue.prototype.$http = Axios;
+Vue.prototype.$http.defaults.headers.common['Authorization'] = localStorage.getItem("token")
 
 Vue.config.productionTip = false
 

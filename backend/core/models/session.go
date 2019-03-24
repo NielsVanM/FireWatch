@@ -127,7 +127,7 @@ func GetSessions(a *Account) []*Session {
 
 	rows, err := database.DB.Query(`
 	SELECT * FROM session
-	WHERE user_id == $1`, a.ID)
+	WHERE user_id = $1`, a.ID)
 	if err != nil {
 		log.Warn("Failed to retrieve sessions from the database ", err.Error())
 		return nil

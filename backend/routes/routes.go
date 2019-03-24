@@ -18,6 +18,8 @@ var UnprotectedRoutes = server.NewRoute("", "GET", nil,
 // ProtectedRoutes is a collection of routes protected by the authorization middleware
 var ProtectedRoutes = server.NewRoute("", "GET", nil,
 	server.NewRoute("/api/v1/", "GET", nil,
+		server.NewRoute("logout-all-devices/", "POST", api.LogoutAllDevices, nil),
+		server.NewRoute("change-password/", "POST", api.ChangePassword, nil),
 		server.NewRoute("device/", "GET", api.GetAllDevices,
 			server.NewRoute("{id}/", "GET", api.GetDevice, nil),
 			server.NewRoute("{id}/", "POST", api.CreateDevice, nil),

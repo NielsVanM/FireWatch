@@ -8,7 +8,7 @@ export default new Vuex.Store({
         authenticated: false,
         user: {},
         token: "",
-        backendURL: "http://localhost:8000" 
+        backendURL: "http://localhost:8000"
     },
     mutations: {
         loggedin (state, load) {
@@ -25,6 +25,12 @@ export default new Vuex.Store({
     getters: {
         isAuthenticated () {
             return localStorage.getItem("token") != "";
+        },
+        getUser () {
+            return JSON.parse(localStorage.getItem("user"))
+        },
+        getToken () {
+            return localStorage.getItem("token")
         }
     }
 })
